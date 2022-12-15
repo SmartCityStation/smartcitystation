@@ -1,0 +1,20 @@
+php artisan infyom:api_scaffold Type_variable  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/type_variable.json
+php artisan infyom:api_scaffold DataVariable  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/data_variables.json
+php artisan infyom:api_scaffold Device  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/devices.json
+php artisan infyom:api_scaffold Village  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/villages.json
+php artisan infyom:api_scaffold Area  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/areas.json
+php artisan infyom:api_scaffold LocationDevice  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/location_devices.json
+php artisan infyom:api_scaffold VariableDevice  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/variable_devices.json
+php artisan infyom:api_scaffold Measure  --prefix=Frontend --factory --seeder --fieldsFile=./_etc/json_scaffolding/measures.json
+php artisan infyom:api_scaffold EventLog  --prefix=Backend --factory --seeder --fieldsFile=./_etc/json_scaffolding/event_logs.json
+
+
+php artisan infyom:rollback Type_variable api_scaffold
+php artisan infyom:rollback DataVariable api_scaffold
+php artisan infyom:rollback Device api_scaffold
+php artisan infyom:rollback Village api_scaffold
+php artisan infyom:rollback Area api_scaffold
+php artisan infyom:rollback LocationDevice api_scaffold
+php artisan infyom:rollback VariableDevice api_scaffold
+php artisan infyom:rollback Measure api_scaffold
+php artisan infyom:rollback EventLog api_scaffold

@@ -1,0 +1,61 @@
+//Procedimiento almacenado para traer medidas de dos días diferentes 
+
+DELIMITER //
+        CREATE PROCEDURE SP_GetMeasures(	
+            IN idVar INT, 
+            IN startDate DATE, 
+            IN endDate DATE,
+            IN idProject INT
+        )
+        BEGIN
+           WITH devicesCTE
+            AS (
+            SELECT device_id
+            FROM location_devices
+            WHERE project_id = idProject),
+            listDevicesCTE AS (
+            SELECT D.id
+                FROM devicesCTE AS LD
+                JOIN devices AS D
+                ON LD.device_id = D.id),
+                measuresCTE AS (
+                SELECT M.time, M.data
+                    FROM measures AS M
+                    JOIN listDevicesCTE AS L
+                    ON L.id = M.device_id
+                    WHERE DATE(M.time) BETWEEN startDate AND endDate AND M.data_variable_id = idVar
+                )      
+        SELECT * FROM measuresCTE;
+       END //
+DELIMITER ;
+
+//Procedimiento almacenado para un dia diferente dependiendo la hora 
+DELIMITER //
+        CREATE PROCEDURE SP_GetMeasuresSameDay(	
+            IN idVar INT, 
+    		IN startDate DATE, 
+    		IN startTime TIME,
+    		IN endTime TIME,
+    		IN idProject INT
+        )
+        BEGIN
+           WITH devicesCTE
+            AS (
+            SELECT device_id
+            FROM location_devices
+            WHERE project_id = idProject),
+            listDevicesCTE AS (
+            SELECT D.id
+                FROM devicesCTE AS LD
+                JOIN devices AS D
+                ON LD.device_id = D.id),
+                measuresCTE AS (
+                SELECT M.time, M.data
+                    FROM measures AS M
+                    JOIN listDevicesCTE AS L
+                    ON L.id = M.device_id
+                    WHERE TIME(M.time) BETWEEN startTime AND endTime AND M.data_variable_id = idVar AND DATE(M.time) = startDate
+                )      
+        SELECT * FROM measuresCTE;
+    END //
+DELIMITER ;
