@@ -1,4 +1,4 @@
-# SmartCityStationDos
+# SmartCityStation
 
 Nuevas funcionalidades desarrolladas en coejecución Heidy - Alberto
 
