@@ -8,7 +8,7 @@
         <form method="GET" action="{{ route('frontend.exportMeasure') }}" enctype="multipart/form-data">
             <div class="row">
                 <!-- query measures -->
-                <div class="col-12">
+                <div class="col-6">
                     <div class="form-group">
                         <label for="project_id" class="font-weight-bold">@lang('Project:') </label>
                         <select class="form-control" id="project_id" name="project">
@@ -16,6 +16,15 @@
                         </select>
                     </div>
                 </div>
+                <div class="col-6">
+                    <div class="form-group">
+                        <label class="font-weight-bold">@lang('Devices'): </label>
+                        <select class="form-control" id="device_id" name="device">
+                            <option disabled selected>Seleccionar...</option>
+                        </select>
+                    </div>
+                </div>
+
 
                 <div class="col-12">
                     <div class="row">
@@ -208,6 +217,48 @@
                         itemVariableType.textContent = nameType;
                         itemVariableType.value = variableTypeId;
                         variables_type.appendChild(itemVariableType);
+                    });
+                },
+                error: function(xhr, status, error) {
+                    let errorMessage = xhr.status + ': ' + xhr.statusText;
+                    alert('Error - ' + errorMessage + ' status: ' + status + '  error: ' + error);
+                }
+            });
+
+        });
+
+        $("#project_id").change(function() {
+
+            idProject = $(this).val();
+            console.log('El proyecto seleccionado es: ' + idProject);
+
+            $.ajax({
+                type: 'GET',
+                url: "{{ route('frontend.getdeviceproject') }}",
+                data: {
+                    _token: '{!! csrf_token() !!}',
+                    projectid: idProject,
+                },
+                contentType: 'application/json',
+                success: function(device_json) {
+
+                    let deviceProject = JSON.parse(device_json);
+
+                    console.log(deviceProject);
+
+                    let devices = document.getElementById("device_id");
+                    let nameType = 'Seleccione ...';
+                    let idType = 0;
+                    let variableTypeId = 0;
+
+                    $.each(deviceProject, function(index, value) {
+                        nameType = value.device_code;
+                        variableTypeId = value.id;
+                        idType = index;
+                        let itemVariableType = document.createElement("option");
+                        itemVariableType.textContent = nameType;
+                        itemVariableType.value = variableTypeId;
+                        devices.appendChild(itemVariableType);
                     });
                 },
                 error: function(xhr, status, error) {
@@ -467,6 +518,7 @@
             var opcVariable = $("#variables_data option:selected").val();
             var opcVariableText = $("#variables_data option:selected").text();
             var opcProject = $('#project_id option:selected').val();
+            var deviceId = $('#device_id option:selected').val();
             var typeVar = $('#variables_type option:selected').val();
             var favoriteColor = $("#favoriteColor").val();
 
@@ -500,6 +552,7 @@
                     startDate: startDate,
                     endDate: endDate,
                     project: idProject,
+                    device: deviceId,
                     startTime: startHour,
                     endTime: endHour
                 },

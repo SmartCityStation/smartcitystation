@@ -242,4 +242,19 @@ class DeviceController extends AppBaseController
 
         return redirect(route('admin.devices.index'));
     }
+
+    public function getDeviceProject(Request $request)
+    {
+        $input = $request->all();
+        $idproject = $input['projectid'];
+
+        $device = LocationDevice::join('devices', 'devices.id', '=', 'location_devices.device_id')
+        ->where('location_devices.project_id', $idproject)
+        ->select('devices.id','devices.device_code')
+        ->get();
+
+        $device_json = $device->toJson();
+
+        return $device_json;
+    }
 }

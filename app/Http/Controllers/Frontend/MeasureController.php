@@ -192,7 +192,7 @@ class MeasureController extends AppBaseController
         $variable = $input['variable'];
         $startDate = $input['startDate'];
         $endDate = $input['endDate'];
-        $project = $input['project'];
+        $device = $input['device'];
         $typeVar = $input['typeVar'];
         $startTime = $input['startTime'];
         $endTime = $input['endTime'];
@@ -206,7 +206,7 @@ class MeasureController extends AppBaseController
                 $endTime = '23:59:59';
             }
 
-            $measuresDay = $this->getMeasuresDay($variable, $startDate, $startTime, $endTime, $project);
+            $measuresDay = $this->getMeasuresDay($variable, $startDate, $startTime, $endTime, $device);
 
             if (count($measuresDay) > 0) {
 
@@ -220,7 +220,7 @@ class MeasureController extends AppBaseController
             }
         } else {
 
-            $measuresDate = $this->getMeasuresDate($variable, $startDate, $endDate, $project);
+            $measuresDate = $this->getMeasuresDate($variable, $startDate, $endDate, $device);
 
             if (isset($measuresDate)) {
                 $diffMonth = $this->diff_Month($startDate, $endDate);
@@ -270,15 +270,15 @@ class MeasureController extends AppBaseController
         This function take the id variable, start date, start time and end time, 
         return the collection of measures of day.
     */
-    private function getMeasuresDay($variable, $startDate, $startTime, $endTime, $project)
+    private function getMeasuresDay($variable, $startDate, $startTime, $endTime, $device)
     {
-        $Measures = DB::select('CALL SP_GetMeasuresSameDay (?, ?, ?, ?, ?)', array($variable, $startDate, $startTime, $endTime, $project));
+        $Measures = DB::select('CALL SP_GetMeasuresSameDay (?, ?, ?, ?, ?)', array($variable, $startDate, $startTime, $endTime, $device));
         return $Measures;
     }
 
-    private function getMeasuresDate($idVar, $startDate, $endDate, $project)
+    private function getMeasuresDate($idVar, $startDate, $endDate, $device)
     {
-        $Measures = DB::select('CALL SP_GetMeasures (?, ?, ?, ?)', array($idVar, $startDate, $endDate, $project));
+        $Measures = DB::select('CALL SP_GetMeasures (?, ?, ?, ?)', array($idVar, $startDate, $endDate, $device));
 
         return $Measures;
     }

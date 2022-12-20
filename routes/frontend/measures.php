@@ -9,6 +9,7 @@ Route::group(['middleware' => ['auth', 'password.expires', config('boilerplate.a
     Route::get('variabletype/getvariabletype', [App\Http\Controllers\Backend\Type_variableController::class, 'getVariableType'])->name('variabletype.getvariabletype');
     Route::get('variabletype/getvariabletypeforproj', [App\Http\Controllers\Backend\Type_variableController::class, 'getVariableTypeForProj'])->name('variabletype.getvariabletypeforproj');
     Route::get('variabledata/getvariabledata', [App\Http\Controllers\Backend\DataVariableController::class, 'getVariableData'])->name('variabledata.getvariabledata');
+    Route::get('devicedata/deviceproject', [App\Http\Controllers\Backend\DeviceController::class, 'getDeviceProject'])->name('getdeviceproject');
     Route::get('measure/showmeasures', [App\Http\Controllers\Frontend\MeasureController::class, 'showMeasures'])->name('measure.showmeasures');
     Route::get('project/getproject', [App\Http\Controllers\Frontend\MeasureCustomerController::class, 'getProject'])->name('getProject');
 
