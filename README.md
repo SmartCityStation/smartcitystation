@@ -44,3 +44,42 @@ Hacer composer update
 * php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
 * php artisan vendor:publish --provider="Spatie\Backup\BackupServiceProvider"
 * php artisan vendor:publish -- provider="Cornford\Googlmapper\MapperServiceProvider" --tag=googlmapper
+
+#Store Procedures to use
+
+
+**Get measures date**
+
+DELIMITER //
+        CREATE PROCEDURE SP_GetMeasures(	
+            IN idVar INT, 
+            IN startDate DATE, 
+            IN endDate DATE,
+            IN deviceId INT
+        )
+        BEGIN
+           WITH measuresCTE AS (
+                SELECT M.time, M.data
+                    FROM measures AS M 
+                    WHERE DATE(M.time) BETWEEN startDate AND endDate AND M.data_variable_id = idVar AND M.device_id = deviceId
+                )      
+        SELECT * FROM measuresCTE
+DELIMITER ;
+
+**Get measures same day**
+
+CREATE PROCEDURE SP_GetMeasuresSameDay(	
+            IN idVar INT, 
+    		IN startDate DATE, 
+    		IN startTime TIME,
+    		IN endTime TIME,
+    		IN deviceId INT
+        )
+        BEGIN
+              WITH measuresCTE AS (
+                SELECT M.time, M.data
+                    WHERE TIME(M.time) BETWEEN startTime AND endTime AND M.data_variable_id = idVar AND DATE(M.time) = startDate AND M.device_id = deviceId
+                )      
+        SELECT * FROM measuresCTE;
+END;
+
