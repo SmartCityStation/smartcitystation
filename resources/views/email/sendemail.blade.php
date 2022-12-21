@@ -26,7 +26,7 @@
 <body>
     <div class=" w-auto">
         <h3 class="text-center"> 
-                 SmartCityStation te informa que los niveles de ruido de la estación {{ $device->device }} han superado los valores máximos permitidos para la zona {{ $subsector->sector }} en la programacion del último minuto
+            SmartCityStation te informa que los niveles de ruido de la estación {{ $device }} ubicada en {{ $address }} han superado los valores máximos permitidos para la zona {{ $sector }} en la programacion del último minuto
         </h3>
         <table class="table ">
             <thead>

@@ -626,18 +626,6 @@ class MeasureController extends AppBaseController
         foreach ($projects as $project) {
             $measuresAlerts = array();
 
-            $device = locationDevice::join('devices', 'devices.id', '=', 'location_devices.device_id')
-            ->where('location_devices.project_id', '=', $project->id)
-            ->select('devices.device_code AS device')
-            ->first();
-
-            $subsector = locationDevice::join('subsectors', 'subsectors.id', '=', 'location_devices.subsector_id')
-            ->join('sectors', 'sectors.id', '=', 'subsectors.sector_id')
-            ->where('location_devices.project_id', '=', $project->id)
-            ->select('sectors.name AS sector')
-            ->first();
-
-
             //Consulta que trae los datos con un minuto de diferencia
             $getMeasures = LocationDevice::join('devices', 'devices.id', '=', 'location_devices.device_id')
                 ->join('measures', 'measures.device_id', '=', 'devices.id')
@@ -647,6 +635,23 @@ class MeasureController extends AppBaseController
                 ->where('measures.time', '>', $hora)
                 ->select('location_devices.device_id AS device_id', 'measures.data', 'measures.time', 'data_variables.name AS data_variable', 'devices.device_code AS device')
                 ->get();
+            
+            foreach ($getMeasures as $measure) {
+               $device = $measure->device;
+               $id = $measure->device_id;
+            } 
+
+            $subsectors = locationDevice::join('subsectors', 'subsectors.id', '=', 'location_devices.subsector_id')
+            ->join('sectors', 'sectors.id', '=', 'subsectors.sector_id')
+            ->where('location_devices.project_id', '=', $project->id)
+            ->where('location_devices.device_id', '=', $id)
+            ->select('sectors.name AS sector', 'location_devices.address')
+            ->get();
+
+            foreach ($subsectors as $subsector) {
+                $sector = $subsector->sector;
+                $address = $subsector->address;
+            }
        
             foreach ($getMeasures as $measure) {
                
@@ -686,7 +691,7 @@ class MeasureController extends AppBaseController
             }
             
             if(count($measuresAlerts) > 0) {
-                $this->userEmail($project->email, $measuresAlerts, $device, $subsector);
+                $this->userEmail($project->email, $measuresAlerts, $device, $sector, $address);
             }
         }
 
@@ -696,8 +701,8 @@ class MeasureController extends AppBaseController
      * this function send email towards the mailabler sendEmailNew.php, send global variable 
      */
 
-    private function userEmail($email, $measuresAlerts, $device, $subsector)
+    private function userEmail($email, $measuresAlerts, $device, $sector, $address)
     {
-        Mail::to($email)->send(new sendEmailNew($measuresAlerts, $device, $subsector));
+        Mail::to($email)->send(new sendEmailNew($measuresAlerts, $device, $sector, $address));
     }
 }

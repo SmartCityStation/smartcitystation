@@ -13,7 +13,7 @@ class sendEmailNew extends Mailable
     
     public $measuresAlerts;
     public $device;
-    public $subsector;
+    public $sector, $address;
     public $subject = "Notificacion Umbral SmartCityStation";
     
 
@@ -22,13 +22,14 @@ class sendEmailNew extends Mailable
      *
      * @return void
      */
-    public function __construct($measuresAlerts, $device, $subsector)
+    public function __construct($measuresAlerts, $device, $sector, $address)
     {
         
         $this->measuresAlerts = $measuresAlerts;
         $this->device = $device;
         $this->subject = $this->subject;
-        $this->subsector = $subsector;
+        $this->sector = $sector;
+        $this->address = $address;
        
         // travels array measuresAlerts for send subject date and hour of the insert db
         // if (is_array($this->measuresAlerts)) {
@@ -50,6 +51,6 @@ class sendEmailNew extends Mailable
     public function build()
     {
         return $this->view('email.sendemail')
-                    ->with($this->measuresAlerts, $this->device, $this->subsector);
+                    ->with($this->measuresAlerts, $this->device, $this->sector, $this->address);
     }
 }
