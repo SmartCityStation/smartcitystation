@@ -615,17 +615,19 @@ class MeasureController extends AppBaseController
     public function lookinForAlertEachMinute()
     {
         $hora = Carbon::now("America/Bogota")->subminutes(1);
-        $fecha = Carbon::now("America/Bogota");      
+        $fecha = Carbon::now("America/Bogota");
 
+        //obtiene los proyectos vigentes
         $projects = Project::join('users', 'users.id', '=', 'projects.user_id')
-        ->where('start_date', '<=', $fecha)
-        ->where('end_date', '>=', $fecha)
-        ->select('users.email', 'projects.id')
-        ->get();
+            ->where('start_date', '<=', $fecha)
+            ->where('end_date', '>=', $fecha)
+            ->select('users.email', 'projects.id')
+            ->get();
 
         foreach ($projects as $project) {
             $measuresAlerts = array();
-
+            $subsectorArray = array();
+           
             //Consulta que trae los datos con un minuto de diferencia
             $getMeasures = LocationDevice::join('devices', 'devices.id', '=', 'location_devices.device_id')
                 ->join('measures', 'measures.device_id', '=', 'devices.id')
@@ -635,26 +637,9 @@ class MeasureController extends AppBaseController
                 ->where('measures.time', '>', $hora)
                 ->select('location_devices.device_id AS device_id', 'measures.data', 'measures.time', 'data_variables.name AS data_variable', 'devices.device_code AS device')
                 ->get();
-            
-            foreach ($getMeasures as $measure) {
-               $device = $measure->device;
-               $id = $measure->device_id;
-            } 
 
-            $subsectors = locationDevice::join('subsectors', 'subsectors.id', '=', 'location_devices.subsector_id')
-            ->join('sectors', 'sectors.id', '=', 'subsectors.sector_id')
-            ->where('location_devices.project_id', '=', $project->id)
-            ->where('location_devices.device_id', '=', $id)
-            ->select('sectors.name AS sector', 'location_devices.address')
-            ->get();
-
-            foreach ($subsectors as $subsector) {
-                $sector = $subsector->sector;
-                $address = $subsector->address;
-            }
-       
             foreach ($getMeasures as $measure) {
-               
+
                 if (substr($measure->time, 11, 8) >= "00:00:00" && substr($measure->time, 11, 8) <= "18:00:00") {
 
                     $alertVariable = LocationDevice::select('subsectors.alert_threshold_day')
@@ -686,23 +671,33 @@ class MeasureController extends AppBaseController
                             array_push($measuresAlerts, array($measure->device, $measure->time, $measure->data_variable, $measure->data, $alertVar, $diff));
                         }
                     }
-
                 }
+
+                $subsectors = locationDevice::join('subsectors', 'subsectors.id', '=', 'location_devices.subsector_id')
+                    ->join('sectors', 'sectors.id', '=', 'subsectors.sector_id')
+                    ->where('location_devices.project_id', '=', $project->id)
+                    ->where('location_devices.device_id', '=',  $measure->device_id)
+                    ->select('sectors.name AS sector', 'location_devices.address')
+                    ->get();
+                
+                foreach ($subsectors as $subsector) {
+                    array_push($subsectorArray, array($subsector->sector, $subsector->address));
+                }
+
             }
-            
-            if(count($measuresAlerts) > 0) {
-                $this->userEmail($project->email, $measuresAlerts, $device, $sector, $address);
+
+            if (count($measuresAlerts) > 0) {
+                $this->userEmail($project->email, $measuresAlerts, $subsectorArray);
             }
         }
-
     }
 
     /**
      * this function send email towards the mailabler sendEmailNew.php, send global variable 
      */
 
-    private function userEmail($email, $measuresAlerts, $device, $sector, $address)
+    private function userEmail($email, $measuresAlerts, $subsectorArray)
     {
-        Mail::to($email)->send(new sendEmailNew($measuresAlerts, $device, $sector, $address));
+        Mail::to($email)->send(new sendEmailNew($measuresAlerts, $subsectorArray));
     }
 }
