@@ -35,15 +35,11 @@ Hacer composer update
 
 * Maatwebsite\Excel\ExcelServiceProvider::class,
 
-* Spatie\Backup\BackupServiceProvider::class, 
-
-* Cornford\Googlmapper\MapperServiceProvider::class,
-
 **Luego publicamos en config con los siguientes comandos:**
 
 * php artisan vendor:publish --provider="Maatwebsite\Excel\ExcelServiceProvider" --tag=config
 * php artisan vendor:publish --provider="Spatie\Backup\BackupServiceProvider"
-* php artisan vendor:publish -- provider="Cornford\Googlmapper\MapperServiceProvider" --tag=googlmapper
+* php artisan vendor:publish --provider="Cornford\Googlmapper\MapperServiceProvider" --tag=googlmapper
 
 # Store Procedures to use
 
